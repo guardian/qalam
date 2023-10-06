@@ -59,7 +59,6 @@ public class Log {
     ///
     ///```
     ///   Log.trace(.experiments).info("This log can be traced back in code!")
-    ///   Log.console("This is a trace log.", .warning, .experiments, "Search in Masthead")
     ///```
     ///
     /// - Parameters:
