@@ -27,7 +27,10 @@ public enum LogSubsystem {
     
     /// Metering or paywall related logs.
     case metering
-    
+
+    /// Growth and Value features.
+    case revenue
+
     public func loggerFunc(category: String) -> Logger {
         switch self {
         case .Core:
@@ -40,6 +43,8 @@ public enum LogSubsystem {
             return Logger(subsystem: "Experiments", category: category)
         case .metering:
             return Logger(subsystem: "Metering", category: category)
+        case .revenue:
+            return Logger(subsystem: "Growth", category: category)
         }
     }
 }
