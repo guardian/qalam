@@ -31,6 +31,9 @@ public enum LogSubsystem {
     /// Growth and Value features. e.g Storekit and Acquisition related features.
     case revenue
 
+    /// Nophan logs for the First Party Tracking package.
+    case nophan
+
     public func loggerFunc(category: String) -> Logger {
         switch self {
         case .Core:
@@ -45,6 +48,8 @@ public enum LogSubsystem {
             return Logger(subsystem: "Metering", category: category)
         case .revenue:
             return Logger(subsystem: "Revenue", category: category)
+        case .nophan:
+            return Logger(subsystem: "Nophan", category: category)
         }
     }
 }
