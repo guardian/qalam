@@ -34,6 +34,9 @@ public enum LogSubsystem {
     /// Nophan logs for the First Party Tracking package.
     case nophan
 
+    /// Deeplinking related logs, related to the deeplink manager.
+    case deeplinking
+
     public func loggerFunc(category: String) -> Logger {
         switch self {
         case .Core:
@@ -50,6 +53,8 @@ public enum LogSubsystem {
             return Logger(subsystem: "Revenue", category: category)
         case .nophan:
             return Logger(subsystem: "Nophan", category: category)
+        case .deeplinking:
+            return Logger(subsystem: "Deeplinking", category: category)
         }
     }
 }
