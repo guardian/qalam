@@ -81,7 +81,7 @@ extension LogSubsystem {
     ///
     /// Example:
     /// ```swift
-    /// let custom = LogSubsystem.named("Usman")
+    /// let custom = Log.info("Hello!", .named("Usman"))
     /// ```
     public static func named(_ name: String) -> LogSubsystem {
         .named(system: name)
