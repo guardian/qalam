@@ -75,10 +75,6 @@ public class Log {
     ///   - type: The severity or type of the log.
     private static func logToModule(_ obj: Any, logger: Logger, type: LogType) {
         if let object = obj as? CustomStringConvertible {
-            if obj is Error {
-                logToType("\(object.description)", logger: logger, type: .error)
-                return
-            }
             logToType(object.description, logger: logger, type: type)
         } else if obj is Int ||
                     obj is String ||
