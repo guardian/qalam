@@ -77,6 +77,8 @@ public class Log {
         switch module {
         case .named(let system):
             logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .info)
+        case .module(let systemLoggable):
+            logToModule(obj, logger: module.loggerFunc(category: systemLoggable.rawValue.capitalized), type: .info)
         default:
             logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .info)
         }
@@ -92,6 +94,8 @@ public class Log {
         switch module {
         case .named(let system):
             logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .warning)
+        case .module(let systemLoggable):
+            logToModule(obj, logger: module.loggerFunc(category: systemLoggable.rawValue.capitalized), type: .warning)
         default:
             logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .warning)
         }
@@ -107,6 +111,8 @@ public class Log {
         switch module {
         case .named(let system):
             logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .error)
+        case .module(let systemLoggable):
+            logToModule(obj, logger: module.loggerFunc(category: systemLoggable.rawValue.capitalized), type: .error)
         default:
             logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .error)
         }
