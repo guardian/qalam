@@ -75,7 +75,7 @@ public class Log {
     public static func info(_ obj: Any, _ module: LogSubsystem = .Core) {
         guard isEnabled else { return }
         switch module {
-        case .module(let system):
+        case .named(let system):
             logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .info)
         default:
             logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .info)
@@ -90,7 +90,7 @@ public class Log {
     public static func warning(_ obj: Any, _ module: LogSubsystem = .Core) {
         guard isEnabled else { return }
         switch module {
-        case .module(let system):
+        case .named(let system):
             logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .warning)
         default:
             logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .warning)
@@ -105,7 +105,7 @@ public class Log {
     public static func error(_ obj: Any, _ module: LogSubsystem = .Core) {
         guard isEnabled else { return }
         switch module {
-        case .module(let system):
+        case .named(let system):
             logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .error)
         default:
             logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .error)

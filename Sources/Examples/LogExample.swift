@@ -1,6 +1,5 @@
 //
 //  LogExample.swift
-//  NewLogger
 //
 //  Created by Usman Nazir on 03/10/2023.
 //
@@ -176,4 +175,44 @@ func logLevels() {
     Log.console("Three", .warning, .personalisation)
     Log.console("Four", .error, .personalisation, "My Guardian")
     print("ABC")
+}
+
+func infoLogs() {
+    Log.info("One")
+    Log.info("Two", .Core)
+    Log.info("Three", .named(system: "Custom Module"))
+}
+
+func warningLogs() {
+    Log.warning("One")
+    Log.warning("Two", .Core)
+    Log.warning("Three", .named(system: "Custom Module"))
+}
+
+func errorLogs() {
+    Log.error("One")
+    Log.error("Two", .Core)
+    Log.error("Three", .named(system: "Custom Module"))
+}
+
+func customLogs() {
+    Log.info("One", .named(system: "Custom Module 1"))
+    Log.warning("Two", .named(system: "Custom Module 2"))
+    Log.error("Three", .named(system: "Custom Module 3"))
+}
+
+func logUsingNames() {
+    Log.info("One", .named(system: "Something"))
+    Log.warning("Two", .named("Also Something"))
+}
+
+func logUsingEnum() {
+    // An enum that can be logged to Qalam
+    enum SomeLoggableEnum: String, QalamLoggable {
+        case one
+        case two
+    }
+    
+    Log.info("One", .module(SomeLoggableEnum.one))
+    Log.info("Two", .module(SomeLoggableEnum.two))
 }
