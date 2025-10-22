@@ -67,6 +67,51 @@ public class Log {
         return module.loggerFunc(category: "Default")
     }
     
+    /// Logs an informational message to the specified logging subsystem.
+    ///
+    /// - Parameters:
+    ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible`.
+    ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
+    public static func info(_ obj: Any, _ module: LogSubsystem = .Core) {
+        guard isEnabled else { return }
+        switch module {
+        case .module(let system):
+            logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .info)
+        default:
+            logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .info)
+        }
+    }
+
+    /// Logs a warning message to the specified logging subsystem.
+    ///
+    /// - Parameters:
+    ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible`.
+    ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
+    public static func warning(_ obj: Any, _ module: LogSubsystem = .Core) {
+        guard isEnabled else { return }
+        switch module {
+        case .module(let system):
+            logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .warning)
+        default:
+            logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .warning)
+        }
+    }
+
+    /// Logs an error message to the specified logging subsystem.
+    ///
+    /// - Parameters:
+    ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible` or `Error`.
+    ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
+    public static func error(_ obj: Any, _ module: LogSubsystem = .Core) {
+        guard isEnabled else { return }
+        switch module {
+        case .module(let system):
+            logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .error)
+        default:
+            logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .error)
+        }
+    }
+    
     /// Logs the object to the specified module.
     ///
     /// - Parameters:
