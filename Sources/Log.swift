@@ -67,6 +67,57 @@ public class Log {
         return module.loggerFunc(category: "Default")
     }
     
+    /// Logs an informational message to the specified logging subsystem.
+    ///
+    /// - Parameters:
+    ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible`.
+    ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
+    public static func info(_ obj: Any, _ module: LogSubsystem = .Core) {
+        guard isEnabled else { return }
+        switch module {
+        case .named(let system):
+            logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .info)
+        case .module(let systemLoggable):
+            logToModule(obj, logger: module.loggerFunc(category: systemLoggable.rawValue.capitalized), type: .info)
+        default:
+            logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .info)
+        }
+    }
+
+    /// Logs a warning message to the specified logging subsystem.
+    ///
+    /// - Parameters:
+    ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible`.
+    ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
+    public static func warning(_ obj: Any, _ module: LogSubsystem = .Core) {
+        guard isEnabled else { return }
+        switch module {
+        case .named(let system):
+            logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .warning)
+        case .module(let systemLoggable):
+            logToModule(obj, logger: module.loggerFunc(category: systemLoggable.rawValue.capitalized), type: .warning)
+        default:
+            logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .warning)
+        }
+    }
+
+    /// Logs an error message to the specified logging subsystem.
+    ///
+    /// - Parameters:
+    ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible` or `Error`.
+    ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
+    public static func error(_ obj: Any, _ module: LogSubsystem = .Core) {
+        guard isEnabled else { return }
+        switch module {
+        case .named(let system):
+            logToModule(obj, logger: module.loggerFunc(category: system.capitalized), type: .error)
+        case .module(let systemLoggable):
+            logToModule(obj, logger: module.loggerFunc(category: systemLoggable.rawValue.capitalized), type: .error)
+        default:
+            logToModule(obj, logger: module.loggerFunc(category: "Default"), type: .error)
+        }
+    }
+    
     /// Logs the object to the specified module.
     ///
     /// - Parameters:
@@ -75,10 +126,6 @@ public class Log {
     ///   - type: The severity or type of the log.
     private static func logToModule(_ obj: Any, logger: Logger, type: LogType) {
         if let object = obj as? CustomStringConvertible {
-            if obj is Error {
-                logToType("\(object.description)", logger: logger, type: .error)
-                return
-            }
             logToType(object.description, logger: logger, type: type)
         } else if obj is Int ||
                     obj is String ||

@@ -36,6 +36,15 @@ public enum LogSubsystem {
 
     /// Deeplinking related logs, related to the deeplink manager.
     case deeplinking
+    
+    /// Puzzles features.
+    case puzzles
+    
+    /// Case to adapt any other sub system
+    case named(system: String)
+    
+    /// Case to adapt any other Loggable enum to Qalam
+    case module(systemLoggable: any QalamLoggable)
 
     public func loggerFunc(category: String) -> Logger {
         switch self {
@@ -50,11 +59,36 @@ public enum LogSubsystem {
         case .metering:
             return Logger(subsystem: "Metering", category: category)
         case .revenue:
-            return Logger(subsystem: "Revenue", category: category)
+            return Logger(subsystem: "Supporter Revenue", category: category)
         case .nophan:
             return Logger(subsystem: "Nophan", category: category)
         case .deeplinking:
             return Logger(subsystem: "Deeplinking", category: category)
+        case .puzzles:
+            return Logger(subsystem: "Puzzles", category: category)
+        case .named(let system):
+            return Logger(subsystem: "\(system.capitalized)", category: category)
+        case .module(let systemLoggable):
+            return Logger(subsystem: "\(systemLoggable.rawValue.capitalized)", category: category)
         }
+    }
+}
+
+// Helper/Convenience functions
+extension LogSubsystem {
+    
+    /// Creates a dynamic logging subsystem by name.
+    ///
+    /// Example:
+    /// ```swift
+    /// let custom = Log.info("Hello!", .named("Usman"))
+    /// ```
+    public static func named(_ name: String) -> LogSubsystem {
+        .named(system: name)
+    }
+    
+    /// Creates a dynamic logging subsystem by loggable enum.
+    public static func module(_ module: any QalamLoggable) -> LogSubsystem {
+        .module(systemLoggable: module)
     }
 }
