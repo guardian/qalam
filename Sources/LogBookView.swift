@@ -39,13 +39,9 @@ public struct LogBookView: View {
                         Text(log.1)
                         HStack(spacing: 5) {
                             Group {
-                                if log.0 == .info {
-                                    Text("🟢")
-                                } else if log.0 == .warning {
-                                    Text("🟡")
-                                } else {
-                                    Text("🔴")
-                                }
+                                Circle()
+                                    .fill(log.0 == .error ? .red : log.0 == .warning ? .yellow : .green)
+                                    .frame(width: 5, height: 5)
                             }
                             .font(.system(size: 5))
                             Text(log.2)
@@ -66,13 +62,9 @@ public struct LogBookView: View {
 
 #Preview {
     LogBookView()
-    Button("X") {
-        Log.info("Usman", .named("test"))
-        Log.error("Usman", .named("test"))
-        Log.info("Usman", .named("test"))
-        Log.error("MNS", .named("foo"))
-        Log.error("Usman", .named("test"))
-        Log.warning("MNS", .named("foo"))
-        Log.warning("MNS", .named("foo"))
+    Button("Test") {
+        Log.info("ABC", .named("london"))
+        Log.error("123", .named("paris"))
+        Log.warning("XYZ", .named("newyork"))
     }
 }
