@@ -7,11 +7,13 @@
 
 import Foundation
 
+typealias LogRepresentable = (String, String)
+
 class LogBook {
     
     public static let sharedInstance = LogBook()
     
-    private var logs: [String:String] = [:]
+    private var logs: [LogRepresentable] = []
     private var subsystems: Set<String> = []
     
     private init() {}
@@ -20,7 +22,7 @@ class LogBook {
         
         guard let stringMessage = message as? String else { return }
         subsystems.insert(subsystem.subsystemName)
-        logs[subsystem.subsystemName] = stringMessage
+        logs.append((stringMessage, subsystem.subsystemName))
         print("insert \(message) for subs \(subsystem)")
         print(subsystems)
         print(logs)
