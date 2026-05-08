@@ -17,7 +17,13 @@ public class Log {
 #else
     private static var isEnabled = false
 #endif
-    
+
+    /// A static flag used to store messages in log books.
+    public static var logBookEnabled = true
+
+    /// Static logbook instance
+    private static var logBook: LogBook = .sharedInstance
+
     /// Logs the given object to the console with specified type and module.
     ///
     /// Examples:
@@ -73,6 +79,7 @@ public class Log {
     ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible`.
     ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
     public static func info(_ obj: Any, _ module: LogSubsystem = .Core) {
+        logToBook(obj, module)
         guard isEnabled else { return }
         switch module {
         case .named(let system):
@@ -155,5 +162,9 @@ public class Log {
         case .error:
             logger.fault("\(description)")
         }
+    }
+    
+    private static func logToBook(_ obj: Any, _ module: LogSubsystem) {
+        logBook.insert(obj, subsystem: module)
     }
 }
