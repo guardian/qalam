@@ -9,7 +9,7 @@ public struct LogBookView: View {
     
     var filteredLogs: [LogRepresentable] {
         guard selectedSubsystem != "All" else { return logs }
-        return logs.filter { $0.1 == selectedSubsystem }
+        return logs.filter { $0.2 == selectedSubsystem }
     }
     
     public var body: some View {
@@ -21,7 +21,7 @@ public struct LogBookView: View {
                     Text("Log Book")
                         .font(.system(size: 30, weight: .heavy, design: .default))
                     Text("View the latest Qalam logs.")
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(.secondary)
                         .font(.system(size: 14))
                 }
                 Spacer()
@@ -35,28 +35,44 @@ public struct LogBookView: View {
             }
             .padding()
             List(filteredLogs.reversed(), id: \.0) { log in
-                VStack(alignment: .leading) {
-                    Text(log.0)
-                    Text(log.1)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                    VStack(alignment: .leading) {
+                        Text(log.1)
+                        HStack(spacing: 5) {
+                            Group {
+                                if log.0 == .info {
+                                    Text("🟢")
+                                } else if log.0 == .warning {
+                                    Text("🟡")
+                                } else {
+                                    Text("🔴")
+                                }
+                            }
+                            .font(.system(size: 5))
+                            Text(log.2)
+                                .foregroundStyle(.secondary)
+                            .font(.caption)
+                        }
+                    }
             }
         }
-        .task {
-            logs = await logBook.logs
-            subsystems = await logBook.subsystems
-            Log.info("Usman", .named("test"))
-            Log.info("Usman", .named("test"))
-            Log.info("Usman", .named("test"))
-            Log.info("MNS", .named("foo"))
-            Log.info("Usman", .named("test"))
-            Log.info("MNS", .named("foo"))
-            Log.info("MNS", .named("foo"))
+        .onAppear {
+            Task {
+                logs = await logBook.logs
+                subsystems = await logBook.subsystems
+            }
         }
     }
 }
 
 #Preview {
     LogBookView()
+    Button("X") {
+        Log.info("Usman", .named("test"))
+        Log.error("Usman", .named("test"))
+        Log.info("Usman", .named("test"))
+        Log.error("MNS", .named("foo"))
+        Log.error("Usman", .named("test"))
+        Log.warning("MNS", .named("foo"))
+        Log.warning("MNS", .named("foo"))
+    }
 }

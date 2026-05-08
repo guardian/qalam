@@ -1,6 +1,6 @@
 import Foundation
 
-typealias LogRepresentable = (String, String)
+typealias LogRepresentable = (LogType, String, String)
 
 actor LogBook {
     
@@ -12,7 +12,7 @@ actor LogBook {
     
     private init() {}
     
-    func insert(_ message: Any, subsystem: LogSubsystem) {
+    func insert(_ type: LogType, _ message: Any, subsystem: LogSubsystem) {
         guard let stringMessage = message as? String else { return }
         
         let subsystemName = subsystem.subsystemName
@@ -23,10 +23,8 @@ actor LogBook {
             }
         }
         
-        logs.append((stringMessage, subsystemName))
+        logs.append((type, stringMessage, subsystemName))
         subsystems.insert(subsystem.subsystemName)
-        print(subsystems)
-        print(logs)
     }
     
     func setLogCount(_ count: Int) {

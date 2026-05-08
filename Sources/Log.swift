@@ -18,8 +18,12 @@ public class Log {
     private static let isEnabled = false
 #endif
 
-    /// A static flag used to store messages in log books.
+#if DEBUG
+    /// A static flag used to store messages in log books (in release only).
     nonisolated(unsafe) public static var logBookEnabled = true
+#else
+    nonisolated(unsafe) public static var logBookEnabled = true
+#endif
 
     /// Static logbook instance
     private static let logBook: LogBook = .sharedInstance
@@ -79,7 +83,7 @@ public class Log {
     ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible`.
     ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
     public static func info(_ obj: Any & Sendable, _ module: LogSubsystem = .Core) {
-        logToBook(obj, module)
+        if logBookEnabled { logToBook(.info, obj, module) }
         guard isEnabled else { return }
         switch module {
         case .named(let system):
@@ -96,7 +100,8 @@ public class Log {
     /// - Parameters:
     ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible`.
     ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
-    public static func warning(_ obj: Any, _ module: LogSubsystem = .Core) {
+    public static func warning(_ obj: Any & Sendable, _ module: LogSubsystem = .Core) {
+        if logBookEnabled { logToBook(.warning, obj, module) }
         guard isEnabled else { return }
         switch module {
         case .named(let system):
@@ -113,7 +118,8 @@ public class Log {
     /// - Parameters:
     ///   - obj: The object or message to log. Can be any type conforming to `CustomStringConvertible` or `Error`.
     ///   - module: The subsystem or module to associate with this log entry. Defaults to `.Core`.
-    public static func error(_ obj: Any, _ module: LogSubsystem = .Core) {
+    public static func error(_ obj: Any & Sendable, _ module: LogSubsystem = .Core) {
+        if logBookEnabled { logToBook(.error, obj, module) }
         guard isEnabled else { return }
         switch module {
         case .named(let system):
@@ -168,9 +174,9 @@ public class Log {
     /// - Parameters:
     ///   - obj: obj to be logged.
     ///   - module: subsystem to be logged.
-    private static func logToBook(_ obj: Any & Sendable, _ module: LogSubsystem) {
+    private static func logToBook(_ type: LogType, _ obj: Any & Sendable, _ module: LogSubsystem) {
         Task {
-            await logBook.insert(obj, subsystem: module)
+            await logBook.insert(type, obj, subsystem: module)
         }
     }
 
