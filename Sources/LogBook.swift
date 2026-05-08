@@ -17,6 +17,12 @@ class LogBook {
     private init() {}
     
     func insert(_ message: Any, subsystem: LogSubsystem) {
+        
+        guard let stringMessage = message as? String else { return }
+        subsystems.insert(subsystem.subsystemName)
+        logs[subsystem.subsystemName] = stringMessage
         print("insert \(message) for subs \(subsystem)")
+        print(subsystems)
+        print(logs)
     }
 }

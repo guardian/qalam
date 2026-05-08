@@ -72,6 +72,22 @@ public enum LogSubsystem {
             return Logger(subsystem: "\(systemLoggable.rawValue.capitalized)", category: category)
         }
     }
+
+    public var subsystemName: String {
+        switch self {
+        case .Core: return "Core"
+        case .appsExperience: return "Apps Experience"
+        case .personalisation: return "Personalisation"
+        case .experiments: return "Experiments"
+        case .metering: return "Metering"
+        case .revenue: return "Supporter Revenue"
+        case .nophan: return "Nophan"
+        case .deeplinking: return "Deeplinking"
+        case .puzzles: return "Puzzles"
+        case .named(let system): return system.capitalized
+        case .module(let systemLoggable): return systemLoggable.rawValue.capitalized
+        }
+    }
 }
 
 // Helper/Convenience functions
