@@ -2,12 +2,12 @@ import Foundation
 
 typealias LogRepresentable = (String, String)
 
-class LogBook {
+actor LogBook {
     
     public static let sharedInstance = LogBook()
     
-    private var logs: [LogRepresentable] = []
-    private var subsystems: Set<String> = []
+    internal var logs: [LogRepresentable] = []
+    internal var subsystems: Set<String> = []
     private var logCount: Int = 15
     
     private init() {}

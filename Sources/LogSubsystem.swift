@@ -11,7 +11,7 @@ import OSLog
 /// Represents different modules for logging within the application.
 ///
 /// Each module corresponds to a specific category within the logging system.
-public enum LogSubsystem {
+public enum LogSubsystem: Sendable {
     
     /// Guardian Live App module.
     case Core
