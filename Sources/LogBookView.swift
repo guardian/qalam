@@ -14,6 +14,8 @@ public struct LogBookView: View {
         return logs.filter { $0.2 == selectedSubsystem }
     }
 
+    public init() {}
+
     public var body: some View {
         VStack(spacing: 0) {
             LogBookHeaderView(
