@@ -18,15 +18,6 @@ public struct LogBookView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            LogBookHeaderView(
-                isEnabled: $isEnabled,
-                selectedSubsystem: $selectedSubsystem,
-                subsystems: subsystems
-            )
-            Rectangle()
-                .frame(height: 2)
-                .foregroundStyle(.secondary)
-                .ignoresSafeArea()
             List {
                 Section {
                     ForEach(filteredLogs.reversed(), id: \.1) { log in
@@ -45,6 +36,19 @@ public struct LogBookView: View {
                     Section { LogListEmptyView() }
                 }
             }
+            .safeAreaInset(edge: .top, content: {
+                VStack(spacing: 0) {
+                    LogBookHeaderView(
+                        isEnabled: $isEnabled,
+                        selectedSubsystem: $selectedSubsystem,
+                        subsystems: subsystems
+                    )
+                    Rectangle()
+                        .frame(height: 2)
+                        .foregroundStyle(.secondary)
+                        .ignoresSafeArea()
+                }
+            })
             .contentMargins(.top, 20)
         }
         .onChange(of: isEnabled) { _, newValue in
@@ -175,6 +179,7 @@ struct LogBookHeaderView: View {
             }
         }
         .padding()
+        .background(.ultraThinMaterial)
         .dynamicTypeSize(.large)
     }
 }
