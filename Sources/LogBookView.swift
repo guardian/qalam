@@ -29,7 +29,7 @@ public struct LogBookView: View {
                 .ignoresSafeArea()
             List {
                 Section {
-                    ForEach(filteredLogs.reversed(), id: \.0) { log in
+                    ForEach(filteredLogs.reversed(), id: \.1) { log in
                         LogRowView(log: log)
                     }
                 } header: {
@@ -45,6 +45,7 @@ public struct LogBookView: View {
                     Section { LogListEmptyView() }
                 }
             }
+            .contentMargins(.top, 20)
         }
         .onChange(of: isEnabled) { _, newValue in
             Log.logBookEnabled = newValue
