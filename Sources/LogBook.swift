@@ -38,9 +38,9 @@ actor LogBook {
         guard let stringMessage = message as? String else { return }
 
         let subsystemName = subsystem.subsystemName
-        let subsystemLogs = logs.filter { $0.1 == subsystemName }
+        let subsystemLogs = logs.filter { $0.2 == subsystemName }
         if subsystemLogs.count >= logCount {
-            if let index = logs.firstIndex(where: { $0.1 == subsystemName }) {
+            if let index = logs.firstIndex(where: { $0.2 == subsystemName }) {
                 logs.remove(at: index)
             }
         }

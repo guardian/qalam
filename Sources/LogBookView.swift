@@ -95,13 +95,15 @@ struct LogRowView: View {
     var body: some View {
         LazyVStack(alignment: .leading) {
             Text(log.1)
+                .font(.footnote)
                 .monospaced()
                 .textSelection(.enabled)
             HStack(spacing: 5) {
                 LogTypeTag(type: log.0)
-                Text(log.2)
+                Text(log.2.uppercased())
+                    .bold()
                     .foregroundStyle(.secondary)
-                    .font(.caption)
+                    .font(.caption2)
                     .monospaced()
             }
         }
@@ -160,6 +162,7 @@ struct LogBookHeaderView: View {
                     .frame(width: 40)
                     .scaleEffect(0.8)
                     .padding(.trailing)
+                    .tint(.indigo)
                 Picker("Subsystem", selection: $selectedSubsystem) {
                     Text("All").tag("All")
                     ForEach(Array(subsystems).sorted(), id: \.self) { subsystem in
@@ -176,7 +179,6 @@ struct LogBookHeaderView: View {
 }
 
 // MARK: - Preview
-
 #Preview {
     LogBookView()
         .onAppear {
