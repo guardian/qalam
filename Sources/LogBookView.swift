@@ -156,6 +156,7 @@ struct LogBookHeaderView: View {
             VStack(spacing: 0) {
                 Toggle(isOn: $isEnabled) { }
                     .frame(width: 40)
+                    .scaleEffect(0.8)
                     .padding(.trailing)
                 Picker("Subsystem", selection: $selectedSubsystem) {
                     Text("All").tag("All")
@@ -168,6 +169,7 @@ struct LogBookHeaderView: View {
             }
         }
         .padding()
+        .dynamicTypeSize(.large)
     }
 }
 
