@@ -65,7 +65,7 @@ public struct LogBookView: View {
                                     .background {
                                         Capsule()
                                             .fill(log.0 == .error ? .red : log.0 == .warning ? .yellow : .green)
-                                            .opacity(0.75)
+                                            .opacity(0.65)
                                     }
                                 Text(log.2)
                                     .foregroundStyle(.secondary)
@@ -92,6 +92,20 @@ public struct LogBookView: View {
                     }
                     .font(.system(size: 12, weight: .regular, design: .monospaced))
                     .foregroundStyle(.secondary)
+                }
+                
+                if filteredLogs.isEmpty {
+                    Section {
+                        ContentUnavailableView(
+                            "Can't find your logs?",
+                            systemImage: "questionmark.message.fill",
+                            description: Text(
+                                "Please ensure Log book is enabled using the toggle above."
+                            )
+                            .font(.caption)
+                        )
+                            .listRowBackground(EmptyView())
+                    }
                 }
             }
         }
