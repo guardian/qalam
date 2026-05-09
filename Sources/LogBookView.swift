@@ -94,18 +94,15 @@ struct LogRowView: View {
     let log: LogRepresentable
 
     var body: some View {
-        LazyVStack(alignment: .leading) {
+        LazyVStack(alignment: .leading, spacing: 12) {
             Text(log.1)
-                .font(.footnote)
-                .monospaced()
+                .font(.system(size: 12, weight: .regular, design: .monospaced))
                 .textSelection(.enabled)
             HStack(spacing: 5) {
                 LogTypeTag(type: log.0)
                 Text(log.2.uppercased())
-                    .bold()
                     .foregroundStyle(.secondary)
-                    .font(.caption2)
-                    .monospaced()
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
             }
         }
     }
@@ -160,8 +157,8 @@ struct LogBookHeaderView: View {
             Spacer()
             VStack(spacing: 0) {
                 Toggle(isOn: $isEnabled) { }
-                    .frame(width: 40)
-                    .scaleEffect(0.8)
+                    .frame(width: 10)
+                    .scaleEffect(0.9)
                     .padding(.trailing)
                     .tint(.indigo)
                 Picker("Subsystem", selection: $selectedSubsystem) {
