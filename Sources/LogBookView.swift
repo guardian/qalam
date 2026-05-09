@@ -1,117 +1,52 @@
 import SwiftUI
 
+// MARK: - LogBookView
 public struct LogBookView: View {
-    
+
     let logBook: LogBook = .sharedInstance
     @State private var selectedSubsystem: String = "All"
     @State private var logs: [LogRepresentable] = []
     @State private var subsystems: Set<String> = []
     @State private var isEnabled: Bool = Log.logBookEnabled
-    
+
     var filteredLogs: [LogRepresentable] {
         guard selectedSubsystem != "All" else { return logs }
         return logs.filter { $0.2 == selectedSubsystem }
     }
-    
+
     public var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Image(systemName: "book.pages.fill")
-                    .font(.system(size: 40, weight: .regular, design: .default))
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Log Book")
-                        .font(.system(size: 25, weight: .bold, design: .monospaced))
-                    Text("View the latest Qalam logs.")
-                        .font(.system(size: 11, design: .monospaced))
-                }
-                Spacer()
-                VStack {
-                    Toggle(isOn: $isEnabled) {
-                        
-                    }
-                    .frame(width: 40)
-                    .padding(.trailing)
-                    Picker("Subsystem", selection: $selectedSubsystem) {
-                        Text("All").tag("All")
-                        ForEach(Array(subsystems), id: \.self) { subsystem in
-                            Text(subsystem).tag(subsystem)
-                        }
-                    }
-                    .pickerStyle(.automatic)
-                    .tint(.primary)
-                }
-            }
-            .padding()
+            LogBookHeaderView(
+                isEnabled: $isEnabled,
+                selectedSubsystem: $selectedSubsystem,
+                subsystems: subsystems
+            )
             Rectangle()
                 .frame(height: 2)
                 .foregroundStyle(.secondary)
                 .ignoresSafeArea()
-
             List {
                 Section {
                     ForEach(filteredLogs.reversed(), id: \.0) { log in
-                        LazyVStack(alignment: .leading) {
-                            Text(log.1)
-                                .monospaced()
-                                .textSelection(.enabled)
-                            HStack(spacing: 5) {
-                                Text(log.0 == .error ? "ERRR" : log.0 == .warning ? "WARN" : "INFO")
-                                    .font(.system(size: 8))
-                                    .monospaced()
-                                    .bold()
-                                    .foregroundStyle(.black)
-                                    .padding(.horizontal, 4)
-                                    .padding(.vertical, 2)
-                                    .background {
-                                        Capsule()
-                                            .fill(log.0 == .error ? .red : log.0 == .warning ? .yellow : .green)
-                                            .opacity(0.65)
-                                    }
-                                Text(log.2)
-                                    .foregroundStyle(.secondary)
-                                    .font(.caption)
-                                    .monospaced()
-                            }
-                        }
+                        LogRowView(log: log)
                     }
                 } header: {
-                    HStack {
-                        Text("Latest logs appear at the top.")
-                            .listRowBackground(EmptyView())
-                        Spacer()
-                        Button {
-                            Task {
-                                await logBook.clearAll()
-                                logs.removeAll()
-                                subsystems.removeAll()
-                            }
-                        } label: {
-                            Text("Clear all")
-                                .bold()
+                    LogListHeaderView {
+                        Task {
+                            await logBook.clearAll()
+                            logs.removeAll()
+                            subsystems.removeAll()
                         }
                     }
-                    .font(.system(size: 12, weight: .regular, design: .monospaced))
-                    .foregroundStyle(.secondary)
                 }
-                
                 if filteredLogs.isEmpty {
-                    Section {
-                        ContentUnavailableView(
-                            "Can't find your logs?",
-                            systemImage: "questionmark.message.fill",
-                            description: Text(
-                                "Please ensure Log book is enabled using the toggle above."
-                            )
-                            .font(.caption)
-                        )
-                            .listRowBackground(EmptyView())
-                    }
+                    Section { LogListEmptyView() }
                 }
             }
         }
-        .onChange(of: isEnabled, { _, newValue in
+        .onChange(of: isEnabled) { _, newValue in
             Log.logBookEnabled = newValue
-        })
+        }
         .onAppear {
             Task {
                 logs = await logBook.logs
@@ -120,6 +55,123 @@ public struct LogBookView: View {
         }
     }
 }
+
+// MARK: - LogTypeTag
+struct LogTypeTag: View {
+    let type: LogType
+
+    private var label: String {
+        switch type {
+        case .error: return "ERRR"
+        case .warning: return "WARN"
+        default: return "INFO"
+        }
+    }
+
+    private var color: Color {
+        switch type {
+        case .error: return .red
+        case .warning: return .yellow
+        default: return .green
+        }
+    }
+
+    var body: some View {
+        Text(label)
+            .font(.system(size: 8, weight: .bold, design: .monospaced))
+            .foregroundStyle(.black)
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .background(Capsule().fill(color).opacity(0.65))
+    }
+}
+
+// MARK: - LogRowView
+struct LogRowView: View {
+    let log: LogRepresentable
+
+    var body: some View {
+        LazyVStack(alignment: .leading) {
+            Text(log.1)
+                .monospaced()
+                .textSelection(.enabled)
+            HStack(spacing: 5) {
+                LogTypeTag(type: log.0)
+                Text(log.2)
+                    .foregroundStyle(.secondary)
+                    .font(.caption)
+                    .monospaced()
+            }
+        }
+    }
+}
+
+// MARK: - LogListHeaderView
+struct LogListHeaderView: View {
+    let onClear: () -> Void
+
+    var body: some View {
+        HStack {
+            Text("Latest logs appear at the top.")
+            Spacer()
+            Button(action: onClear) {
+                Text("Clear all").bold()
+            }
+        }
+        .font(.system(size: 12, weight: .regular, design: .monospaced))
+        .foregroundStyle(.secondary)
+    }
+}
+
+// MARK: - LogListEmptyView
+struct LogListEmptyView: View {
+    var body: some View {
+        ContentUnavailableView(
+            "Can't find your logs?",
+            systemImage: "questionmark.message.fill",
+            description: Text("Please ensure Log Book is enabled using the toggle above.")
+                .font(.caption)
+        )
+        .listRowBackground(EmptyView())
+    }
+}
+
+// MARK: - LogBookHeaderView
+struct LogBookHeaderView: View {
+    @Binding var isEnabled: Bool
+    @Binding var selectedSubsystem: String
+    let subsystems: Set<String>
+
+    var body: some View {
+        HStack {
+            Image(systemName: "book.pages.fill")
+                .font(.system(size: 40, weight: .regular))
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Log Book")
+                    .font(.system(size: 25, weight: .bold, design: .monospaced))
+                Text("View the latest Qalam logs.")
+                    .font(.system(size: 11, design: .monospaced))
+            }
+            Spacer()
+            VStack(spacing: 0) {
+                Toggle(isOn: $isEnabled) { }
+                    .frame(width: 40)
+                    .padding(.trailing)
+                Picker("Subsystem", selection: $selectedSubsystem) {
+                    Text("All").tag("All")
+                    ForEach(Array(subsystems).sorted(), id: \.self) { subsystem in
+                        Text(subsystem).tag(subsystem)
+                    }
+                }
+                .pickerStyle(.automatic)
+                .tint(.primary)
+            }
+        }
+        .padding()
+    }
+}
+
+// MARK: - Preview
 
 #Preview {
     LogBookView()
