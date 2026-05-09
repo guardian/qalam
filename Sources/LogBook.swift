@@ -30,4 +30,9 @@ actor LogBook {
     func setLogCount(_ count: Int) {
         logCount = count
     }
+    
+    func clearAll() {
+        logs.removeAll()
+        subsystems.removeAll()
+    }
 }

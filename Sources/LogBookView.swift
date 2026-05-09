@@ -6,6 +6,7 @@ public struct LogBookView: View {
     @State private var selectedSubsystem: String = "All"
     @State private var logs: [LogRepresentable] = []
     @State private var subsystems: Set<String> = []
+    @State private var isEnabled: Bool = Log.logBookEnabled
     
     var filteredLogs: [LogRepresentable] {
         guard selectedSubsystem != "All" else { return logs }
@@ -13,44 +14,90 @@ public struct LogBookView: View {
     }
     
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
-                Image(systemName: "book.pages")
-                    .font(.system(size: 40, weight: .bold, design: .default))
-                VStack(alignment: .leading) {
+                Image(systemName: "book.pages.fill")
+                    .font(.system(size: 40, weight: .regular, design: .default))
+                VStack(alignment: .leading, spacing: 5) {
                     Text("Log Book")
-                        .font(.system(size: 30, weight: .heavy, design: .default))
+                        .font(.system(size: 25, weight: .bold, design: .monospaced))
                     Text("View the latest Qalam logs.")
-                        .foregroundStyle(.secondary)
-                        .font(.system(size: 14))
+                        .font(.system(size: 11, design: .monospaced))
                 }
                 Spacer()
-                Picker("Subsystem", selection: $selectedSubsystem) {
-                    Text("All").tag("All")
-                    ForEach(Array(subsystems), id: \.self) { subsystem in
-                        Text(subsystem).tag(subsystem)
+                VStack {
+                    Toggle(isOn: $isEnabled) {
+                        
                     }
-                }
-                .pickerStyle(.automatic)
-            }
-            .padding()
-            List(filteredLogs.reversed(), id: \.0) { log in
-                    VStack(alignment: .leading) {
-                        Text(log.1)
-                        HStack(spacing: 5) {
-                            Group {
-                                Circle()
-                                    .fill(log.0 == .error ? .red : log.0 == .warning ? .yellow : .green)
-                                    .frame(width: 5, height: 5)
-                            }
-                            .font(.system(size: 5))
-                            Text(log.2)
-                                .foregroundStyle(.secondary)
-                            .font(.caption)
+                    .frame(width: 40)
+                    .padding(.trailing)
+                    Picker("Subsystem", selection: $selectedSubsystem) {
+                        Text("All").tag("All")
+                        ForEach(Array(subsystems), id: \.self) { subsystem in
+                            Text(subsystem).tag(subsystem)
                         }
                     }
+                    .pickerStyle(.automatic)
+                    .tint(.primary)
+                }
+            }
+            .padding()
+            Rectangle()
+                .frame(height: 2)
+                .foregroundStyle(.secondary)
+                .ignoresSafeArea()
+
+            List {
+                Section {
+                    ForEach(filteredLogs.reversed(), id: \.0) { log in
+                        LazyVStack(alignment: .leading) {
+                            Text(log.1)
+                                .monospaced()
+                                .textSelection(.enabled)
+                            HStack(spacing: 5) {
+                                Text(log.0 == .error ? "ERRR" : log.0 == .warning ? "WARN" : "INFO")
+                                    .font(.system(size: 8))
+                                    .monospaced()
+                                    .bold()
+                                    .foregroundStyle(.black)
+                                    .padding(.horizontal, 4)
+                                    .padding(.vertical, 2)
+                                    .background {
+                                        Capsule()
+                                            .fill(log.0 == .error ? .red : log.0 == .warning ? .yellow : .green)
+                                            .opacity(0.75)
+                                    }
+                                Text(log.2)
+                                    .foregroundStyle(.secondary)
+                                    .font(.caption)
+                                    .monospaced()
+                            }
+                        }
+                    }
+                } header: {
+                    HStack {
+                        Text("Latest logs appear at the top.")
+                            .listRowBackground(EmptyView())
+                        Spacer()
+                        Button {
+                            Task {
+                                await logBook.clearAll()
+                                logs.removeAll()
+                                subsystems.removeAll()
+                            }
+                        } label: {
+                            Text("Clear all")
+                                .bold()
+                        }
+                    }
+                    .font(.system(size: 12, weight: .regular, design: .monospaced))
+                    .foregroundStyle(.secondary)
+                }
             }
         }
+        .onChange(of: isEnabled, { _, newValue in
+            Log.logBookEnabled = newValue
+        })
         .onAppear {
             Task {
                 logs = await logBook.logs
@@ -62,9 +109,9 @@ public struct LogBookView: View {
 
 #Preview {
     LogBookView()
-    Button("Test") {
-        Log.info("ABC", .named("london"))
-        Log.error("123", .named("paris"))
-        Log.warning("XYZ", .named("newyork"))
-    }
+        .onAppear {
+            Log.info("Data loaded from cache", .Core)
+            Log.error("Cannot load puzzle", .named("Puzzles"))
+            Log.warning("Recipe loading delay.", .named("Feast"))
+        }
 }

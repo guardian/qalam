@@ -17,13 +17,12 @@ public class Log {
 #else
     private static let isEnabled = false
 #endif
-
-#if DEBUG
+    
     /// A static flag used to store messages in log books (in release only).
-    nonisolated(unsafe) public static var logBookEnabled = true
-#else
-    nonisolated(unsafe) public static var logBookEnabled = true
-#endif
+    nonisolated(unsafe) public static var logBookEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: "logBookEnabled") }
+        set { UserDefaults.standard.set(newValue, forKey: "logBookEnabled") }
+    }
 
     /// Static logbook instance
     private static let logBook: LogBook = .sharedInstance
