@@ -11,7 +11,7 @@ import OSLog
 /// Represents different modules for logging within the application.
 ///
 /// Each module corresponds to a specific category within the logging system.
-public enum LogSubsystem {
+public enum LogSubsystem: Sendable {
     
     /// Guardian Live App module.
     case Core
@@ -70,6 +70,22 @@ public enum LogSubsystem {
             return Logger(subsystem: "\(system.capitalized)", category: category)
         case .module(let systemLoggable):
             return Logger(subsystem: "\(systemLoggable.rawValue.capitalized)", category: category)
+        }
+    }
+
+    public var subsystemName: String {
+        switch self {
+        case .Core: return "Core"
+        case .appsExperience: return "Apps Experience"
+        case .personalisation: return "Personalisation"
+        case .experiments: return "Experiments"
+        case .metering: return "Metering"
+        case .revenue: return "Supporter Revenue"
+        case .nophan: return "Nophan"
+        case .deeplinking: return "Deeplinking"
+        case .puzzles: return "Puzzles"
+        case .named(let system): return system.capitalized
+        case .module(let systemLoggable): return systemLoggable.rawValue.capitalized
         }
     }
 }

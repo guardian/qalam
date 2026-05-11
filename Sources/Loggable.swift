@@ -1,3 +1,3 @@
 import Foundation
 
-public protocol QalamLoggable: RawRepresentable, CaseIterable where RawValue == String {}
+public protocol QalamLoggable: Sendable, RawRepresentable, CaseIterable where RawValue == String {}

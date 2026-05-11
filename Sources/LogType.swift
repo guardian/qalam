@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents the severity or type of the log.
-public enum LogType {
+public enum LogType: Sendable {
     
     /// Informational logs.
     case info
