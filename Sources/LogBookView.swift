@@ -5,13 +5,13 @@ public struct LogBookView: View {
 
     let logBook: LogBook = .sharedInstance
     @State private var selectedSubsystem: String = "All"
-    @State private var logs: [LogRepresentable] = []
+    @State private var logs: [LogBookItem] = []
     @State private var subsystems: Set<String> = []
     @State private var isEnabled: Bool = Log.logBookEnabled
 
-    var filteredLogs: [LogRepresentable] {
+    var filteredLogs: [LogBookItem] {
         guard selectedSubsystem != "All" else { return logs }
-        return logs.filter { $0.2 == selectedSubsystem }
+        return logs.filter { $0.subsystem == selectedSubsystem }
     }
 
     public init() {}
@@ -29,7 +29,7 @@ public struct LogBookView: View {
                 .ignoresSafeArea()
             List {
                 Section {
-                    ForEach(filteredLogs.reversed(), id: \.1) { log in
+                    ForEach(filteredLogs.reversed(), id: \.message) { log in
                         LogRowView(log: log)
                     }
                 } header: {
@@ -91,16 +91,16 @@ struct LogTypeTag: View {
 
 // MARK: - LogRowView
 struct LogRowView: View {
-    let log: LogRepresentable
+    let log: LogBookItem
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 12) {
-            Text(log.1)
+            Text(log.message)
                 .font(.system(size: 12, weight: .regular, design: .monospaced))
                 .textSelection(.enabled)
             HStack(spacing: 5) {
-                LogTypeTag(type: log.0)
-                Text(log.2.uppercased())
+                LogTypeTag(type: log.type)
+                Text(log.subsystem.uppercased())
                     .foregroundStyle(.secondary)
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
             }

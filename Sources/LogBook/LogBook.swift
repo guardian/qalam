@@ -1,8 +1,5 @@
 import Foundation
 
-/// A tuple representing a single log entry containing the log type, message, and subsystem name.
-typealias LogRepresentable = (LogType, String, String)
-
 /// A thread-safe actor responsible for storing and managing in-memory log entries.
 ///
 /// `LogBook` maintains a rolling window of logs per subsystem in FIFO order,
@@ -15,7 +12,7 @@ actor LogBook {
     public static let sharedInstance = LogBook()
 
     /// The stored log entries across all subsystems.
-    internal var logs: [LogRepresentable] = []
+    internal var logs: [LogBookItem] = []
 
     /// The set of unique subsystem names that have been logged to.
     internal var subsystems: Set<String> = []
@@ -38,14 +35,14 @@ actor LogBook {
         guard let stringMessage = message as? String else { return }
 
         let subsystemName = subsystem.subsystemName
-        let subsystemLogs = logs.filter { $0.2 == subsystemName }
+        let subsystemLogs = logs.filter { $0.subsystem == subsystemName }
         if subsystemLogs.count >= logCount {
-            if let index = logs.firstIndex(where: { $0.2 == subsystemName }) {
+            if let index = logs.firstIndex(where: { $0.subsystem == subsystemName }) {
                 logs.remove(at: index)
             }
         }
 
-        logs.append((type, stringMessage, subsystemName))
+        logs.append(LogBookItem(type: type, message: stringMessage, subsystem: subsystemName))
         subsystems.insert(subsystemName)
     }
 
